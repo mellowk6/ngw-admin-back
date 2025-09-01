@@ -1,1 +1,1 @@
-rootProject.name = "admin-bff"
+rootProject.name = "ngw-admin-back"

@@ -16,6 +16,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")    // JPA
+    runtimeOnly("com.h2database:h2")                                           // 임시 DB(H2)
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // (향후 확장) Redis 세션 전환 시 주석 해제
     // implementation("org.springframework.session:spring-session-data-redis")

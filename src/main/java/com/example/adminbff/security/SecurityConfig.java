@@ -38,19 +38,35 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http,
                                     SecurityContextRepository contextRepo) throws Exception {
         http
+                // CSRF: 쿠키 방식 유지. (H2 콘솔만 예외)
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/auth/csrf", "/actuator/**"))
+                        .ignoringRequestMatchers(
+                                "/api/auth/csrf",     // ← 추가
+                                "/h2-console/**",
+                                "/actuator/**") // 콘솔은 제외
+                )
+                .headers(h -> h.frameOptions(f -> f.sameOrigin())) // H2 콘솔 표시용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .sessionFixation(sf -> sf.migrateSession())) // 세션 고정 보호
-                .securityContext(sc -> sc.securityContextRepository(contextRepo)) // 컨텍스트 저장소 연결
+                        .sessionFixation(sf -> sf.migrateSession()))
+                .securityContext(sc -> sc.securityContextRepository(contextRepo))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/logout", "/auth/csrf", "/actuator/health").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/me").authenticated()
+                        .requestMatchers(
+                                "/api/auth/csrf",
+                                "/api/auth/login",
+                                "/api/auth/logout",
+                                "/api/auth/check-id",
+                                "/api/auth/signup",
+                                "/api/dept/**",
+                                "/h2-console/**",
+                                "/actuator/health"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/me").authenticated() // ← /me 도 /api/me 로 맞추기
                         .requestMatchers("/proxy/**").authenticated()
-                        .anyRequest().denyAll())
+                        .anyRequest().denyAll()
+                )
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .formLogin(f -> f.disable())
@@ -74,6 +90,7 @@ public class SecurityConfig {
         return src;
     }
 
+    /** ✅ 비밀번호 인코더 (여기에 두는 게 정석) */
     @Bean
     PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 

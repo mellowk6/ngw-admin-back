@@ -3,10 +3,13 @@ package com.example.adminbff.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -15,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authManager;
@@ -27,13 +30,15 @@ public class AuthController {
         this.securityContextRepository = securityContextRepository;
     }
 
+    /** 요청 DTO */
     public record LoginReq(@NotBlank String username, @NotBlank String password) {}
 
+    /** 로그인: DB 기반 AuthenticationManager → SecurityContext 저장 */
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginReq req,
+    public Map<String, Object> login(@Valid @RequestBody LoginReq req,
                                      HttpServletRequest request,
                                      HttpServletResponse response) {
-        // 1) 인증 수행
+        // 1) 인증 수행 (UserDetailsService + PasswordEncoder 사용)
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.username(), req.password()));
 
@@ -42,19 +47,25 @@ public class AuthController {
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
 
-        // 3) 세션 확보(없으면 생성) + 세션 고정 공격 방지
+        // 3) 세션 확보(없으면 생성) + 세션 고정 보호
         HttpSession session = request.getSession(true);
         try { request.changeSessionId(); } catch (IllegalStateException ignore) {}
-
-        // (선택) 마지막 로그인 시각 등 세션 부가 정보
         session.setAttribute("lastLoginAt", System.currentTimeMillis());
 
-        // 4) ★ 컨텍스트를 세션 저장소에 명시적으로 저장 (중요)
+        // 4) 컨텍스트를 세션 저장소에 명시적으로 저장
         securityContextRepository.saveContext(context, request, response);
 
         return Map.of("ok", true);
     }
 
+    /** 인증 실패 시 401로 응답 */
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleAuthError(AuthenticationException ex) {
+        return Map.of("ok", false, "message", "아이디 또는 비밀번호를 확인하세요.");
+    }
+
+    /** 로그아웃 */
     @PostMapping("/logout")
     public Map<String, Object> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
