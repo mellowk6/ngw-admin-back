@@ -1,43 +1,34 @@
 package com.example.adminbff.controller;
 
 import com.example.adminbff.dto.LogEntryDto;
-import com.example.adminbff.helper.LogEntrySpecs;
-import com.example.adminbff.repository.LogEntryRepository;
+import com.example.adminbff.dto.LogQueryRequest;
+import com.example.adminbff.dto.PageResponse;
+import com.example.adminbff.service.NgwLogProxyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.Duration;
 
 @RestController
-@RequestMapping("/api/logs")
 @RequiredArgsConstructor
+@RequestMapping("/api/logs")
+@Slf4j
 public class LogController {
-    private final LogEntryRepository repo;
 
-    @GetMapping
-    public Page<LogEntryDto> list(
-            @RequestParam(required=false) String guid,
-            @RequestParam(required=false) List<String> logger,
-            @PageableDefault(size=10, sort="time", direction = Sort.Direction.DESC) Pageable pageable) {
-        var spec = Specification.where(LogEntrySpecs.guidLike(guid))
-                .and(LogEntrySpecs.loggerIn(logger));
-        return repo.findAll(spec, pageable).map(LogEntryDto::from);
-    }
+    private final NgwLogProxyService ngw;
 
-    @GetMapping("/loggers")
-    public List<String> loggers() { return repo.findDistinctLoggerNames(); }
-
-    @GetMapping("/guids")
-    public List<String> guids(@RequestParam(defaultValue="20") int limit) {
-        return repo.findDistinctGuids(PageRequest.of(0, Math.max(1, Math.min(limit, 100))));
+    @PostMapping
+    public ResponseEntity<PageResponse<LogEntryDto>> list(@RequestBody(required = false) LogQueryRequest req) {
+        try {
+            var body = ngw.fetchLogsFromNgw(req).block(Duration.ofSeconds(5));
+            return ResponseEntity.ok(body);
+        } catch (Exception e) {
+            log.warn("NGW fetch failed: {}", e.getMessage(), e);
+            // 실패 시 빈 페이지
+            return ResponseEntity.ok(new PageResponse<>(java.util.List.of(), 0,
+                    req != null && req.getSize() != null ? req.getSize() : 10, 0, 0));
+        }
     }
 }
