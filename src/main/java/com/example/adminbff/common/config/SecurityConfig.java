@@ -16,9 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,33 +30,44 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    /** 세션 기반 SecurityContext 저장소 */
     @Bean
     public SecurityContextRepository securityContextRepository() {
         return new HttpSessionSecurityContextRepository();
     }
 
+    /** 프론트에서 사용하기 쉬운 쿠키 기반 CSRF 저장소를 빈으로 노출 */
+    @Bean
+    public CsrfTokenRepository csrfTokenRepository() {
+        CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        repo.setCookieName("XSRF-TOKEN");
+        repo.setHeaderName("X-XSRF-TOKEN");
+        repo.setCookiePath("/");
+        return repo;
+    }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http,
-                                    SecurityContextRepository contextRepo) throws Exception {
+                                    SecurityContextRepository contextRepo,
+                                    CsrfTokenRepository csrfRepo) throws Exception {
 
         http
-                // CSRF: 기본 활성. 읽기 전용 로그 API(POST)는 예외로 둠.
+                // CSRF: 기본 활성. 일부 경로는 예외 처리
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(csrfRepo)
                         .ignoringRequestMatchers(
                                 new AntPathRequestMatcher("/api/auth/csrf"),
                                 new AntPathRequestMatcher("/h2-console/**"),
                                 new AntPathRequestMatcher("/actuator/**"),
-                                // ✅ NGW 로그 프록시 API는 POST로 조회하므로 CSRF 제외
+                                // NGW 로그 프록시 조회는 POST이므로 CSRF 제외
                                 new AntPathRequestMatcher("/api/logs/**", "POST")
                         )
                 )
-                .headers(h -> h.frameOptions(f -> f.sameOrigin())) // H2 콘솔
+                .headers(h -> h.frameOptions(f -> f.sameOrigin())) // H2 콘솔 허용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        // 로그인 후 세션 ID만 교체(세션 데이터/토큰 유지)
-                        .sessionFixation(sf -> sf.changeSessionId())
+                        .sessionFixation(sf -> sf.changeSessionId()) // 세션 고정 보호
                 )
                 .securityContext(sc -> sc.securityContextRepository(contextRepo))
                 .authorizeHttpRequests(auth -> auth
@@ -70,8 +82,7 @@ public class SecurityConfig {
                                 "/actuator/health"
                         ).permitAll()
 
-                        // ✅ 이제 로그 페이지는 NGW 프록시만 호출: /api/logs/**
-                        // 필요 시 .authenticated() 로 변경 가능
+                        // 로그 프록시 공개(필요시 authenticated()로 바꾸세요)
                         .requestMatchers("/api/logs/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
@@ -80,12 +91,13 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .formLogin(f -> f.disable())
-                .httpBasic(b -> b.disable());
+                .formLogin(f -> f.disable())   // 컨트롤러에서 로그인 처리 시 비활성
+                .httpBasic(b -> b.disable());  // 기본 인증 비활성
 
         return http.build();
     }
 
+    /** CORS 설정 */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var conf = new CorsConfiguration();
@@ -100,9 +112,11 @@ public class SecurityConfig {
         return src;
     }
 
+    /** 비밀번호 해시 */
     @Bean
     PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
+    /** 로그인에 사용할 AuthenticationManager (컨트롤러 로그인용) */
     @Bean
     AuthenticationManager authenticationManager(UserDetailsService uds, PasswordEncoder pe) {
         var provider = new DaoAuthenticationProvider();
@@ -111,6 +125,7 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
+    /** 동시 세션 제어 등에 사용 가능 */
     @Bean
     SessionRegistry sessionRegistry() { return new SessionRegistryImpl(); }
 }
