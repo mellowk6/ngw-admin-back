@@ -1,17 +1,21 @@
 package com.example.adminbff.application.user.service;
 
 import com.example.adminbff.api.user.dto.DeptDto;
+import com.example.adminbff.domain.user.repository.DeptRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DeptService {
+
+    private final DeptRepository repo;
+
     public List<DeptDto> list() {
-        return List.of(
-                new DeptDto("A001", "IT계정계전환추진팀"),
-                new DeptDto("A002", "디지털플랫폼전환팀"),
-                new DeptDto("A003", "디지털코어팀")
-        );
+        return repo.findAll().stream()
+                .map(d -> new DeptDto(d.getCode(), d.getName()))
+                .toList();
     }
 }

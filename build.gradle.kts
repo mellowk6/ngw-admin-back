@@ -16,7 +16,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")    // JPA
+//    implementation("org.springframework.boot:spring-boot-starter-data-jpa")    // JPA
+    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3") //JDBC
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")         // JDBC & Hikari (starter-jdbc가 가져옴)
     runtimeOnly("com.h2database:h2")                                           // 임시 DB(H2)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

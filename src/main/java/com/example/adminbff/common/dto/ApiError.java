@@ -1,4 +1,4 @@
-package com.example.adminbff.api.advice;
+package com.example.adminbff.common.dto;
 
 import java.time.OffsetDateTime;
 import java.util.List;

@@ -1,5 +1,6 @@
-package com.example.adminbff.api.advice;
+package com.example.adminbff.common.advice;
 
+import com.example.adminbff.common.dto.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.MDC;

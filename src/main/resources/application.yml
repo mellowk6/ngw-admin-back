@@ -9,7 +9,7 @@ server:
       cookie:
         name: ADMIN_SESSION
         http-only: true
-        secure: false # dev 프로필에서 true로 override
+        secure: false   # dev 프로필에서 true로 override
         same-site: Lax
 
 spring:
@@ -17,13 +17,30 @@ spring:
     name: ngw-admin-back
   session:
     store-type: none
-
   profiles:
     active: local
+
+  # SQL 자동 초기화 비활성
+  sql:
+    init:
+      mode: embedded
+
+# === MyBatis 공통 설정 ===
+mybatis:
+  mapper-locations: classpath:/mybatis/**/*.xml
+  type-aliases-package: com.example.adminbff.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 3
+    jdbc-type-for-null: 'NULL'
+    cache-enabled: false
 
 ngw:
   base-url: http://ngw-internal.svc.cluster.local
   service-key: ${NGW_SERVICE_KEY:change-me}
+  timeout:
+    connect-millis: 2000
+    read-millis: 3000
 
 management:
   endpoints:
@@ -31,11 +48,10 @@ management:
       exposure:
         include: health,info
 
-# 하이버네이트 DDL 로그레벨
 logging:
   level:
-    org.hibernate.tool.hbm2ddl: ERROR
-    org.hibernate.tool.schema: ERROR
+    org.mybatis: DEBUG
+    org.mybatis.spring: DEBUG
 
 ---
 
@@ -48,25 +64,18 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:h2:file:./.localdb/ngw;MODE=MySQL;DATABASE_TO_UPPER=false;AUTO_SERVER=TRUE
+#    url: jdbc:h2:file:./.localdb/ngw;MODE=MySQL;DATABASE_TO_UPPER=false;AUTO_SERVER=TRUE # h2 파일형
+    url: jdbc:h2:mem:ngw;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE # h2 메모리형
     driver-class-name: org.h2.Driver
     username: sa
     password:
-
-  jpa:
-    hibernate:
-      ddl-auto: update # 엔티티 기반으로 테이블 자동 생성/업데이트
-    open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
 
   h2:
     console:
       enabled: true
       path: /h2-console
 
-# 로컬에서 NGW 호출 설정 오버라이드
+# 로컬 NGW 호출 오버라이드
 ngw:
   base-url: http://localhost:8083/ngw
   timeout:
@@ -88,15 +97,6 @@ spring:
     driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
     username: ${DB_USERNAME:ngw}
     password: ${DB_PASSWORD:change-me}
-
-  jpa:
-    hibernate:
-      ddl-auto: validate # 운영은 스키마 자동 변경 금지 권장
-    open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.MySQL8Dialect}
 
 # 운영 보안 쿠키 강화
 server:

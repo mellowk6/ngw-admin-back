@@ -1,30 +1,25 @@
 package com.example.adminbff.domain.user.model;
 
-import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class UserAccount {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, length = 64)
-    private String username;      // 사번
-
-    @Column(nullable = false)
-    private String passwordHash;  // BCrypt
-
-    @Column(nullable = false, length = 100)
+    private String username;
+    private String passwordHash;
     private String displayName;
-
-    @Column(nullable = false, length = 50)
     private String deptCode;
-
-    @Column(nullable = false, length = 100)
     private String company;
+    private String roles;            // "ROLE_USER,ROLE_ADMIN"
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false, length = 100)
-    private String roles;         // 예: "ROLE_USER" (CSV로 간단히)
+    public List<String> roleList() {
+        return roles == null || roles.isBlank()
+                ? List.of()
+                : Arrays.stream(roles.split(",")).map(String::trim).toList();
+    }
 }

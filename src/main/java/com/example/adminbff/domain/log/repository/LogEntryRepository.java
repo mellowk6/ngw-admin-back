@@ -1,17 +1,21 @@
 package com.example.adminbff.domain.log.repository;
 
-import com.example.adminbff.domain.log.model.LogEntry;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
+import com.example.adminbff.domain.log.mapper.LogEntryMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface LogEntryRepository extends JpaRepository<LogEntry, Long>, JpaSpecificationExecutor<LogEntry> {
-    @Query("select distinct e.loggerName from LogEntry e order by e.loggerName")
-    List<String> findDistinctLoggerNames();
+@Repository
+@RequiredArgsConstructor
+public class LogEntryRepository {
+    private final LogEntryMapper mapper;
 
-    @Query("select distinct e.guid from LogEntry e where e.guid is not null order by e.guid desc")
-    List<String> findDistinctGuids(Pageable pageable); // 최근 N개 제안
+    public List<String> findDistinctLoggerNames() {
+        return mapper.selectDistinctLoggerNames();
+    }
+
+    public List<String> findRecentGuids(int limit) {
+        return mapper.selectRecentGuids(limit);
+    }
 }

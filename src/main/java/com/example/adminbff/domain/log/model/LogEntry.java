@@ -1,27 +1,18 @@
 package com.example.adminbff.domain.log.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import java.time.LocalDateTime;
 
-import java.time.Instant;
-
-@Entity
-@Table(name = "log_entries")
-@Getter
-@Setter
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class LogEntry {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
-
-    @Column(nullable=false)
-    Instant time;         // 시간
-    @Column(name="ngw_id") String ngwId;          // NGW ID
-    @Column(name="logger_name") String loggerName;// Logger Name
-    @Column(name="log_level") String logLevel;    // Log Level
-    String thread;                                // Thread
-    @Column(name="node_id") String nodeId;        // NODE ID
-    @Column(name="class_name") String className;  // Class
-    String guid;                                  // GUID
-    @Column(columnDefinition="TEXT") String message; // 메시지
+    private Long id;
+    private LocalDateTime timeTs;   // ← 이 이름으로 유지
+    private String ngwId;
+    private String loggerName;
+    private String logLevel;
+    private String thread;
+    private String nodeId;
+    private String className;
+    private String guid;
+    private String message;
 }

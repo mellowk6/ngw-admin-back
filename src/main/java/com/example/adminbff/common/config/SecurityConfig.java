@@ -79,7 +79,8 @@ public class SecurityConfig {
                                 "/api/auth/check-id",
                                 "/api/auth/signup",
                                 "/h2-console/**",
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/api/dept/list"
                         ).permitAll()
 
                         // 로그 프록시 공개(필요시 authenticated()로 바꾸세요)

@@ -1,11 +1,36 @@
 package com.example.adminbff.domain.user.repository;
 
+import com.example.adminbff.domain.user.mapper.UserMapper;
 import com.example.adminbff.domain.user.model.UserAccount;
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
-    boolean existsByUsername(String username);
-    Optional<UserAccount> findByUsername(String username);
+@Repository
+@RequiredArgsConstructor
+public class UserAccountRepository {
+
+    private final UserMapper mapper;
+
+    public boolean existsByUsername(String username) {
+        return mapper.existsByUsername(username);
+    }
+
+    public Optional<UserAccount> findByUsername(String username) {
+        return Optional.ofNullable(mapper.findByUsername(username));
+    }
+
+    /** JPA의 save 시그니처를 흉내내 동일하게 제공 */
+    public UserAccount save(UserAccount user) {
+        if (user.getId() == null) {
+            mapper.insert(user); // id 세팅됨
+        } else {
+            int updated = mapper.update(user);
+            if (updated == 0) {
+                throw new IllegalStateException("수정 대상이 없습니다. id=" + user.getId());
+            }
+        }
+        return user;
+    }
 }

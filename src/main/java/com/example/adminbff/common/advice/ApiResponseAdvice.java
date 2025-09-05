@@ -1,4 +1,4 @@
-package com.example.adminbff.api.advice;
+package com.example.adminbff.common.advice;
 
 import com.example.adminbff.common.dto.ApiResponse;
 import org.springframework.core.MethodParameter;
