@@ -1,0 +1,21 @@
+# 빌드 산출물
+/build/
+/out/
+/target/
+
+# Gradle
+.gradle/
+/gradle-cache/
+/!gradle/wrapper/gradle-wrapper.jar
+
+# IDE / 에디터
+.idea/
+.vscode/
+*.iml
+
+# 로그
+*.log
+
+# OS 캐시
+.DS_Store
+Thumbs.db

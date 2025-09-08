@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nhbank.ngw.infra.log.mapper.LogEntryMapper">
+
+    <!-- LogEntry 명시 매핑 (time -> LocalDateTime) -->
+    <resultMap id="LogEntryMap" type="com.nhbank.ngw.domain.log.model.LogEntry">
+        <id     column="id"           property="id"/>
+        <result column="time"         property="time"       jdbcType="TIMESTAMP" javaType="java.time.LocalDateTime"/>
+        <result column="ngw_id"       property="ngwId"/>
+        <result column="logger_name"  property="loggerName"/>
+        <result column="log_level"    property="logLevel"/>
+        <result column="thread"       property="thread"/>
+        <result column="node_id"      property="nodeId"/>
+        <result column="class_name"   property="className"/>
+        <result column="guid"         property="guid"/>
+        <result column="message"      property="message"/>
+    </resultMap>
+
+    <select id="selectDistinctLoggerNames" resultType="string">
+        SELECT DISTINCT logger_name
+        FROM log_entry
+        WHERE logger_name IS NOT NULL
+        ORDER BY logger_name
+    </select>
+
+    <select id="selectRecentGuids" parameterType="int" resultType="string">
+        SELECT DISTINCT guid
+        FROM log_entry
+        WHERE guid IS NOT NULL
+        ORDER BY guid DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectLogs"
+            parameterType="com.nhbank.ngw.domain.log.model.LogSearchCond"
+            resultMap="LogEntryMap">
+        SELECT
+        id, time, ngw_id, logger_name, log_level,
+        thread, node_id, class_name, guid, message
+        FROM log_entry
+        <where>
+            <if test="guid != null and guid != ''">
+                AND guid LIKE CONCAT('%', #{guid}, '%')
+            </if>
+            <if test="logger != null and logger.size() > 0">
+                AND logger_name IN
+                <foreach item="it" collection="logger" open="(" separator="," close=")">
+                    #{it}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY time DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countLogs"
+            parameterType="com.nhbank.ngw.domain.log.model.LogSearchCond"
+            resultType="long">
+        SELECT COUNT(*)
+        FROM log_entry
+        <where>
+            <if test="guid != null and guid != ''">
+                AND guid LIKE CONCAT('%', #{guid}, '%')
+            </if>
+            <if test="logger != null and logger.size() > 0">
+                AND logger_name IN
+                <foreach item="it" collection="logger" open="(" separator="," close=")">
+                    #{it}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+</mapper>

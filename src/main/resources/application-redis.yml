@@ -1,0 +1,11 @@
+spring:
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on_save
+      namespace: admin-bff:sessions
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
