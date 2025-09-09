@@ -1,11 +1,11 @@
 package com.nhbank.ngw.infra.log.service;
 
-import com.nhbank.ngw.api.log.dto.out.LogEntryDto;
-import com.nhbank.ngw.api.log.dto.in.LogQueryRequest;
-import com.nhbank.ngw.api.log.dto.out.PageResponse;
+import com.nhbank.ngw.domain.log.command.LogEntry;
 
 import com.nhbank.ngw.common.config.properties.NgwProperties;
-import com.nhbank.ngw.domain.log.service.NgwLogProxyService;
+import com.nhbank.ngw.domain.log.command.LogQuery;
+import com.nhbank.ngw.domain.log.service.LogService;
+import com.nhbank.ngw.common.domain.command.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,7 +20,7 @@ import java.time.Duration;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class NgwLogProxyServiceImpl implements NgwLogProxyService {
+public class LogServiceImpl implements LogService {
 
     private final WebClient webClient;
     private final NgwProperties ngwProperties;
@@ -31,8 +31,8 @@ public class NgwLogProxyServiceImpl implements NgwLogProxyService {
      * - 4xx/5xx 응답 바디를 포함하여 의미 있는 에러로 전달
      * - 읽기 타임아웃 및 5xx 재시도(최대 2회, 지수 백오프)
      */
-    public Mono<PageResponse<LogEntryDto>> fetchLogsFromNgw(LogQueryRequest req) {
-        final LogQueryRequest safe = (req != null) ? req : new LogQueryRequest();
+    public Mono<Page<LogEntry>> fetchLogsFromNgw(LogQuery logQuery) {
+
 
         final long readTimeoutMs = (ngwProperties.getTimeout() != null)
                 ? ngwProperties.getTimeout().getReadMillis()
@@ -46,7 +46,7 @@ public class NgwLogProxyServiceImpl implements NgwLogProxyService {
                         h.add("X-Service-Key", ngwProperties.getServiceKey());
                     }
                 })
-                .bodyValue(safe)
+                .bodyValue(logQuery)
                 .retrieve()
                 // 4xx -> 클라 입력 오류/권한 오류 등으로 분류
                 .onStatus(status -> status.is4xxClientError(), resp ->
@@ -65,7 +65,7 @@ public class NgwLogProxyServiceImpl implements NgwLogProxyService {
                                         resp.statusCode(), body))
                                 .then(resp.createException())   // ★ 여기도 동일
                 )
-                .bodyToMono(new ParameterizedTypeReference<PageResponse<LogEntryDto>>() {
+                .bodyToMono(new ParameterizedTypeReference<Page<LogEntry>>() {
                 })
                 // 읽기 타임아웃 (커넥터 레벨 readTimeout과 별개로 파이프라인 보호)
                 .timeout(Duration.ofMillis(readTimeoutMs))

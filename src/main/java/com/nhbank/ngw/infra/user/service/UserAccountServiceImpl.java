@@ -1,8 +1,8 @@
 package com.nhbank.ngw.infra.user.service;
 
-import com.nhbank.ngw.api.user.dto.in.SignupRequest;
 import com.nhbank.ngw.common.exception.DuplicateUsernameException;
-import com.nhbank.ngw.domain.user.model.UserAccount;
+import com.nhbank.ngw.domain.user.command.Signup;
+import com.nhbank.ngw.domain.user.entity.UserAccount;
 import com.nhbank.ngw.domain.user.repository.UserAccountRepository;
 import com.nhbank.ngw.domain.user.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +24,14 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Override
     @Transactional
-    public Long signup(SignupRequest req) {
-        if (!isUsernameAvailable(req.username())) {
-            throw new DuplicateUsernameException(req.username());
+    public Long signup(Signup signup) {
+        if (!isUsernameAvailable(signup.username())) {
+            throw new DuplicateUsernameException(signup.username());
         }
-        UserAccount u = UserAccount.builder()
-                .username(req.username())
-                .passwordHash(passwordEncoder.encode(req.password()))
-                .displayName(req.displayName())
-                .deptCode(req.department())
-                .company(req.company())
-                .roles("ROLE_USER")
-                .build();
 
-        UserAccount saved = userAccountRepository.save(u);  // 저장 후 ID 세팅된 객체 반환
-        return saved.getId();                                  // record 접근자
+        UserAccount userAccount = signup.toEntity("ROLE_USER", passwordEncoder);
+        UserAccount savedUserAccount = userAccountRepository.save(userAccount);
+
+        return savedUserAccount.getId();
     }
 }

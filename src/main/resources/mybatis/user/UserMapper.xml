@@ -3,7 +3,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nhbank.ngw.infra.user.mapper.UserAccountMapper">
 
-    <resultMap id="UserAccountMap" type="com.nhbank.ngw.domain.user.model.UserAccount">
+    <resultMap id="UserAccountMap" type="com.nhbank.ngw.domain.user.entity.UserAccount">
         <id     column="id"            property="id"/>
         <result column="username"      property="username"/>
         <result column="password_hash" property="passwordHash"/>
@@ -25,13 +25,13 @@
         where username = #{username}
     </select>
 
-    <insert id="insert" parameterType="com.nhbank.ngw.domain.user.model.UserAccount"
+    <insert id="insert" parameterType="com.nhbank.ngw.domain.user.entity.UserAccount"
             useGeneratedKeys="true" keyProperty="id">
         insert into users (username, password_hash, display_name, dept_code, company, roles)
         values (#{username}, #{passwordHash}, #{displayName}, #{deptCode}, #{company}, #{roles})
     </insert>
 
-    <update id="update" parameterType="com.nhbank.ngw.domain.user.model.UserAccount">
+    <update id="update" parameterType="com.nhbank.ngw.domain.user.entity.UserAccount">
         update users
         set password_hash = #{passwordHash},
         display_name = #{displayName},

@@ -4,14 +4,15 @@ import com.nhbank.ngw.api.log.dto.out.LogEntryDto;
 import com.nhbank.ngw.api.log.dto.in.LogQueryRequest;
 import com.nhbank.ngw.api.log.dto.out.PageResponse;
 import com.nhbank.ngw.common.api.dto.ApiResponse;
-import com.nhbank.ngw.domain.log.service.NgwLogProxyService;
+import com.nhbank.ngw.common.api.mapper.PageMapper;
+import com.nhbank.ngw.domain.log.service.LogService;
+import com.nhbank.ngw.common.domain.command.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,22 +20,28 @@ import java.util.List;
 @Slf4j
 public class LogController {
 
-    private final NgwLogProxyService ngw;
+    private final LogService logService;
 
     @PostMapping
     public Mono<ApiResponse<PageResponse<LogEntryDto>>> list(
-            @RequestBody(required = false) LogQueryRequest req
+            @RequestBody(required = false) LogQueryRequest logQueryRequest
     ) {
-        final int size = (req != null && req.getSize() != null) ? req.getSize() : 10;
+        // 본문이 없으면 기본 요청 생성
+        LogQueryRequest safeReq = (logQueryRequest == null) ? new LogQueryRequest() : logQueryRequest;
 
-        return ngw.fetchLogsFromNgw(req)
+        // 도메인 커맨드로 변환(내부에서 page/size 기본값 보정)
+        var command  = safeReq.toCommand();
+        int page = command.page();
+        int size = command.size();
+
+        return logService.fetchLogsFromNgw(command)
                 .timeout(Duration.ofSeconds(5))
                 .onErrorResume(e -> {
                     log.warn("NGW fetch failed: {}", e.getMessage(), e);
-                    // 실패 시에도 UI가 깨지지 않도록 '빈 페이지'를 내려줌
-                    var empty = new PageResponse<LogEntryDto>(List.of(), 0, size, 0, 0);
-                    return Mono.just(empty);
+                    return Mono.just(Page.empty(page, size));
+
                 })
+                .map(result -> PageMapper.toDto(result, LogEntryDto::from))
                 .map(ApiResponse::ok);
     }
 }

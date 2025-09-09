@@ -1,4 +1,4 @@
-package com.nhbank.ngw.domain.user.model;
+package com.nhbank.ngw.domain.user.entity;
 
 import lombok.*;
 

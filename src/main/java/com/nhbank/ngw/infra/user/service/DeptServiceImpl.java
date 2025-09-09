@@ -4,7 +4,7 @@ import com.nhbank.ngw.domain.user.repository.DeptRepository;
 import com.nhbank.ngw.domain.user.service.DeptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.nhbank.ngw.domain.user.model.Dept;
+import com.nhbank.ngw.domain.user.entity.Dept;
 import java.util.List;
 
 @Service

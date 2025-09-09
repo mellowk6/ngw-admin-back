@@ -1,6 +1,8 @@
 package com.nhbank.ngw.api.log.dto.out;
 
-import com.nhbank.ngw.domain.log.model.LogEntry;
+import com.nhbank.ngw.domain.log.command.LogEntry;
+import com.nhbank.ngw.domain.log.command.LogQuery;
+
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -31,4 +33,5 @@ public record LogEntryDto(
                 e.message()
         );
     }
+
 }
