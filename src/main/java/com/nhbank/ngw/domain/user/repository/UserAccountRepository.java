@@ -1,6 +1,6 @@
 package com.nhbank.ngw.domain.user.repository;
 
-import com.nhbank.ngw.domain.user.entity.UserAccount;
+import com.nhbank.ngw.domain.user.model.UserAccount;
 
 import java.util.Optional;
 

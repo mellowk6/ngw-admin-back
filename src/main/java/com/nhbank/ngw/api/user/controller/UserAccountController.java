@@ -28,7 +28,7 @@ public class UserAccountController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@Valid @RequestBody SignupRequest signupRequest) {
-        Long id = userAccountService.signup(signupRequest.toDomain(signupRequest));
+        Long id = userAccountService.signup(signupRequest.toCommand(signupRequest));
         // 컨트롤러 베이스 경로가 /api/user 이므로 /api/user/{id}로 맞춤
         return ResponseEntity.created(URI.create("/api/user/" + id)).build();
     }

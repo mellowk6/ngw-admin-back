@@ -1,4 +1,4 @@
-package com.nhbank.ngw.domain.user.entity;
+package com.nhbank.ngw.domain.user.model;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-@Getter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class UserAccount {
     private Long id;
     private String username;

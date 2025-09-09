@@ -10,7 +10,7 @@ public record SignupRequest(
         @NotBlank String department,   // deptCode
         @NotBlank String company
 ) {
-    public Signup toDomain(SignupRequest r) {
+    public Signup toCommand(SignupRequest r) {
         return new Signup(
                 r.username(),
                 r.password(),

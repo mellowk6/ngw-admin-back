@@ -25,6 +25,8 @@ dependencies {
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
+    implementation "org.apache.commons:commons-lang3:3.+"
+
     // 임시 DB(H2)
     runtimeOnly 'com.h2database:h2'
 

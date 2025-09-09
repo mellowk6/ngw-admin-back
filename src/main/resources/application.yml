@@ -26,7 +26,7 @@ spring:
 # === MyBatis 공통 설정 ===
 mybatis:
   mapper-locations: classpath:/mybatis/**/*.xml
-  type-aliases-package: com.example.adminbff.domain
+  type-aliases-package: com.nhbank.ngw.domain
   configuration:
     map-underscore-to-camel-case: true
     default-statement-timeout: 3

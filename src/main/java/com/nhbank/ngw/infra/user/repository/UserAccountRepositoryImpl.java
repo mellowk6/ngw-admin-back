@@ -1,7 +1,7 @@
 package com.nhbank.ngw.infra.user.repository;
 
 import com.nhbank.ngw.infra.user.mapper.UserAccountMapper;
-import com.nhbank.ngw.domain.user.entity.UserAccount;
+import com.nhbank.ngw.domain.user.model.UserAccount;
 import com.nhbank.ngw.domain.user.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

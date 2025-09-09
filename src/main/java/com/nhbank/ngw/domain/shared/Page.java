@@ -1,4 +1,4 @@
-package com.nhbank.ngw.common.domain.command;
+package com.nhbank.ngw.domain.shared;
 
 import java.util.Collections;
 import java.util.List;

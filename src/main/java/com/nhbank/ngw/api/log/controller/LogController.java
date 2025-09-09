@@ -6,7 +6,7 @@ import com.nhbank.ngw.api.log.dto.out.PageResponse;
 import com.nhbank.ngw.common.api.dto.ApiResponse;
 import com.nhbank.ngw.common.api.mapper.PageMapper;
 import com.nhbank.ngw.domain.log.service.LogService;
-import com.nhbank.ngw.common.domain.command.Page;
+import com.nhbank.ngw.domain.shared.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,20 +26,20 @@ public class LogController {
     public Mono<ApiResponse<PageResponse<LogEntryDto>>> list(
             @RequestBody(required = false) LogQueryRequest logQueryRequest
     ) {
-        // 본문이 없으면 기본 요청 생성
-        LogQueryRequest safeReq = (logQueryRequest == null) ? new LogQueryRequest() : logQueryRequest;
 
-        // 도메인 커맨드로 변환(내부에서 page/size 기본값 보정)
-        var command  = safeReq.toCommand();
-        int page = command.page();
-        int size = command.size();
+        // 본문이 없을 때도 안전하게 처리
+        LogQueryRequest safeReq = (logQueryRequest == null) ? LogQueryRequest.builder().build() : logQueryRequest;
 
-        return logService.fetchLogsFromNgw(command)
+        // 기본값 보정 포함하여 도메인 커맨드로 변환
+        var cmd  = safeReq.toCommand();
+        int page = cmd.page();
+        int size = cmd.size();
+
+        return logService.fetchLogsFromNgw(cmd)
                 .timeout(Duration.ofSeconds(5))
                 .onErrorResume(e -> {
-                    log.warn("NGW fetch failed: {}", e.getMessage(), e);
+                    log.warn("NGW fetch failed. page={}, size={}, cause={}", page, size, e.toString(), e);
                     return Mono.just(Page.empty(page, size));
-
                 })
                 .map(result -> PageMapper.toDto(result, LogEntryDto::from))
                 .map(ApiResponse::ok);

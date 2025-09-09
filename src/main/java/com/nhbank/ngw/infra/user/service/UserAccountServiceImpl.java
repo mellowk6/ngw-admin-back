@@ -2,7 +2,7 @@ package com.nhbank.ngw.infra.user.service;
 
 import com.nhbank.ngw.common.exception.DuplicateUsernameException;
 import com.nhbank.ngw.domain.user.command.Signup;
-import com.nhbank.ngw.domain.user.entity.UserAccount;
+import com.nhbank.ngw.domain.user.model.UserAccount;
 import com.nhbank.ngw.domain.user.repository.UserAccountRepository;
 import com.nhbank.ngw.domain.user.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,8 @@ public class UserAccountServiceImpl implements UserAccountService {
             throw new DuplicateUsernameException(signup.username());
         }
 
-        UserAccount userAccount = signup.toEntity("ROLE_USER", passwordEncoder);
+        String encodedPassword = passwordEncoder.encode(signup.rawPassword());
+        UserAccount userAccount = signup.toEntity(encodedPassword, "ROLE_USER");
         UserAccount savedUserAccount = userAccountRepository.save(userAccount);
 
         return savedUserAccount.getId();

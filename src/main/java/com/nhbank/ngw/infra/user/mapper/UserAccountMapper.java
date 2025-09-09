@@ -1,6 +1,6 @@
 package com.nhbank.ngw.infra.user.mapper;
 
-import com.nhbank.ngw.domain.user.entity.UserAccount;
+import com.nhbank.ngw.domain.user.model.UserAccount;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

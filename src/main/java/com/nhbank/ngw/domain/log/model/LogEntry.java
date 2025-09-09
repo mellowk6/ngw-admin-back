@@ -1,4 +1,4 @@
-package com.nhbank.ngw.domain.log.command;
+package com.nhbank.ngw.domain.log.model;
 
 import lombok.*;
 

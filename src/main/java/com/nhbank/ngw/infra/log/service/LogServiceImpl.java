@@ -1,11 +1,11 @@
 package com.nhbank.ngw.infra.log.service;
 
-import com.nhbank.ngw.domain.log.command.LogEntry;
+import com.nhbank.ngw.domain.log.model.LogEntry;
 
 import com.nhbank.ngw.common.config.properties.NgwProperties;
 import com.nhbank.ngw.domain.log.command.LogQuery;
 import com.nhbank.ngw.domain.log.service.LogService;
-import com.nhbank.ngw.common.domain.command.Page;
+import com.nhbank.ngw.domain.shared.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;

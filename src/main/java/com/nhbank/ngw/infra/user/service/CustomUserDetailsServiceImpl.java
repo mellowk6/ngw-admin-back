@@ -1,6 +1,6 @@
 package com.nhbank.ngw.infra.user.service;
 
-import com.nhbank.ngw.domain.user.entity.UserAccount;
+import com.nhbank.ngw.domain.user.model.UserAccount;
 import com.nhbank.ngw.domain.user.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

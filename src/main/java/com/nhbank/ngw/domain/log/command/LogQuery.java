@@ -1,6 +1,6 @@
 package com.nhbank.ngw.domain.log.command;
 
-import java.time.OffsetDateTime;
+
 public record LogQuery(
         String guid,          // nullable
         String logger,        // nullable (logger name prefix 등)
