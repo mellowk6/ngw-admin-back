@@ -4,8 +4,10 @@
 <mapper namespace="com.nhbank.ngw.infra.user.mapper.DeptMapper">
 
     <resultMap id="DeptMap" type="com.nhbank.ngw.domain.user.model.Dept">
-        <result column="dept_code" property="code"/>
-        <result column="dept_name" property="name"/>
+        <constructor>
+            <arg column="dept_code" javaType="java.lang.String" name="code"/>
+            <arg column="dept_name" javaType="java.lang.String" name="name"/>
+        </constructor>
     </resultMap>
 
     <select id="selectAll" resultMap="DeptMap">

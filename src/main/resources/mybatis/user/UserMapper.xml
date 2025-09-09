@@ -3,7 +3,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nhbank.ngw.infra.user.mapper.UserAccountMapper">
 
-    <resultMap id="UserMap" type="com.nhbank.ngw.domain.user.model.UserAccount">
+    <resultMap id="UserAccountMap" type="com.nhbank.ngw.domain.user.model.UserAccount">
         <id     column="id"            property="id"/>
         <result column="username"      property="username"/>
         <result column="password_hash" property="passwordHash"/>
@@ -19,7 +19,7 @@
         where username = #{username}
     </select>
 
-    <select id="findByUsername" parameterType="string" resultMap="UserMap">
+    <select id="findByUsername" parameterType="string" resultMap="UserAccountMap">
         select id, username, password_hash, display_name, dept_code, company, roles
         from users
         where username = #{username}
@@ -34,10 +34,10 @@
     <update id="update" parameterType="com.nhbank.ngw.domain.user.model.UserAccount">
         update users
         set password_hash = #{passwordHash},
-        display_name  = #{displayName},
-        dept_code     = #{deptCode},
-        company       = #{company},
-        roles         = #{roles}
+        display_name = #{displayName},
+        dept_code = #{deptCode},
+        company = #{company},
+        roles = #{roles}
         where id = #{id}
     </update>
 

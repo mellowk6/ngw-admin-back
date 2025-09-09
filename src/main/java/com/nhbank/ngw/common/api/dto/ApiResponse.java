@@ -9,7 +9,6 @@ import java.time.OffsetDateTime;
 /**
  * 표준 성공 응답 래퍼.
  * 프런트에는 아래 형태로 전달됩니다.
- *
  * {
  *   "timestamp": "2025-09-03T08:31:12.345Z",
  *   "path": "/api/...",

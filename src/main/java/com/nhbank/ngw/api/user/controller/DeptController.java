@@ -23,5 +23,4 @@ public class DeptController {
                 .map(DeptDto::from)   // 변환 메서드 호출
                 .toList();
     }
-
 }
