@@ -6,7 +6,7 @@ import com.nhbank.ngw.api.log.dto.out.PageResponse;
 import com.nhbank.ngw.api.shared.dto.ApiResponse;
 import com.nhbank.ngw.api.shared.mapper.PageMapper;
 import com.nhbank.ngw.domain.log.service.LogService;
-import com.nhbank.ngw.domain.shared.Page;
+import com.nhbank.ngw.domain.shared.model.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

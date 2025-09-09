@@ -3,7 +3,7 @@ package com.nhbank.ngw.api.shared.mapper;
 
 
 import com.nhbank.ngw.api.log.dto.out.PageResponse;
-import com.nhbank.ngw.domain.shared.Page;
+import com.nhbank.ngw.domain.shared.model.Page;
 
 import java.util.function.Function;
 
