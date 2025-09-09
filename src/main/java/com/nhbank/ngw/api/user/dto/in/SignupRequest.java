@@ -8,4 +8,5 @@ public record SignupRequest(
         @NotBlank String displayName,
         @NotBlank String department,   // deptCode
         @NotBlank String company
-) {}
+) {
+}

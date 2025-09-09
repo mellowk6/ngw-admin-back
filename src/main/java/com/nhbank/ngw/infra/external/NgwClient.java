@@ -9,13 +9,13 @@ import reactor.core.publisher.Mono;
 @Component
 public class NgwClient {
 
-    private final WebClient wc;
+    private final WebClient webClient;
 
     public NgwClient(
         @Value("${ngw.base-url}") String baseUrl,
         @Value("${ngw.service-key:}") String serviceKey
     ) {
-        this.wc = WebClient.builder()
+        this.webClient = WebClient.builder()
             .baseUrl(baseUrl)
             .defaultHeader("X-Service-Key", serviceKey)
             .defaultHeader(HttpHeaders.ACCEPT, "application/json")
@@ -23,7 +23,7 @@ public class NgwClient {
     }
 
     public Mono<String> getStats(String group) {
-        return wc.get()
+        return webClient.get()
             .uri(uri -> uri.path("/internal/stats").queryParam("group", group).build())
             .retrieve()
             .bodyToMono(String.class);

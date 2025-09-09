@@ -1,6 +1,7 @@
-package com.nhbank.ngw.common.advice;
+package com.nhbank.ngw.common.api.advice;
 
-import com.nhbank.ngw.common.dto.ApiError;
+import com.nhbank.ngw.common.api.dto.ApiError;
+import com.nhbank.ngw.common.exception.DuplicateUsernameException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.MDC;
@@ -90,6 +91,25 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleOthers(Exception ex, HttpServletRequest req) {
         return build(req, HttpStatus.INTERNAL_SERVER_ERROR, "요청 처리 중 오류가 발생했습니다.", "INTERNAL", null);
+    }
+
+    /**
+     * 사용자ID 중복 예외 → 409 Conflict
+     */
+    @ExceptionHandler(DuplicateUsernameException.class)
+    public ResponseEntity<ApiError> handleDuplicate(DuplicateUsernameException ex,
+                                                    HttpServletRequest req) {
+        ApiError error = new ApiError(
+                OffsetDateTime.now(),
+                req.getRequestURI(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                "USER_DUPLICATE",       // 비즈니스 에러 코드
+                null,                   // traceId: MDC 연동 가능
+                null                    // details: 필드에러 없음
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     // 공통 빌더

@@ -1,4 +1,4 @@
-package com.nhbank.ngw.common.dto;
+package com.nhbank.ngw.common.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

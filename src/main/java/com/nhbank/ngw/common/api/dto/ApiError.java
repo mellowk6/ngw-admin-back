@@ -1,4 +1,4 @@
-package com.nhbank.ngw.common.dto;
+package com.nhbank.ngw.common.api.dto;
 
 import java.time.OffsetDateTime;
 import java.util.List;

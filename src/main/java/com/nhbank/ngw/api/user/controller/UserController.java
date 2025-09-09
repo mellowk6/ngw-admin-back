@@ -1,11 +1,11 @@
 package com.nhbank.ngw.api.user.controller;
 
-import com.nhbank.ngw.common.dto.ApiResponse;
+import com.nhbank.ngw.api.user.dto.in.LoginRequest;
+import com.nhbank.ngw.common.api.dto.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,29 +19,27 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
-public class AuthController {
+@RequestMapping("/api/user")
+public class UserController {
 
-    private final AuthenticationManager authManager;
+    private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
 
-    public AuthController(AuthenticationManager authManager,
+    public UserController(AuthenticationManager authenticationManager,
                           SecurityContextRepository securityContextRepository) {
-        this.authManager = authManager;
+        this.authenticationManager = authenticationManager;
         this.securityContextRepository = securityContextRepository;
     }
 
-    /** 요청 DTO */
-    public record LoginReq(@NotBlank String username, @NotBlank String password) {}
-
+    
     /** 로그인: DB 기반 AuthenticationManager → SecurityContext 저장 */
     @PostMapping("/login")
-    public ApiResponse<Map<String, Object>> login(@Valid @RequestBody LoginReq req,
+    public ApiResponse<Map<String, Object>> login(@Valid @RequestBody LoginRequest req,
                                                   HttpServletRequest request,
                                                   HttpServletResponse response) {
         try {
             // 1) 인증 수행 (UserDetailsService + PasswordEncoder 사용)
-            Authentication auth = authManager.authenticate(
+            Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.username(), req.password()));
 
             // 2) SecurityContext 구성 및 홀더 반영

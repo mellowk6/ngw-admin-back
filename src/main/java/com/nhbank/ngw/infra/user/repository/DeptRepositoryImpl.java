@@ -11,9 +11,9 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class DeptRepositoryImpl implements DeptRepository {
-    private final DeptMapper mapper;
+    private final DeptMapper deptMapper;
 
     public List<Dept> findAll() {
-        return mapper.selectAll();
+        return deptMapper.selectAll();
     }
 }

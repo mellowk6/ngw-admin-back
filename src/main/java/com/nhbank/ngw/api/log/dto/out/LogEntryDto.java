@@ -20,15 +20,15 @@ public record LogEntryDto(
 
     public static LogEntryDto from(LogEntry e) {
         return new LogEntryDto(
-                e.getTimeTs() == null ? null : ISO.format(e.getTimeTs().atZone(ZoneId.systemDefault())),
-                e.getNgwId(),
-                e.getLoggerName(),
-                e.getLogLevel(),
-                e.getThread(),
-                e.getNodeId(),
-                e.getClassName(),
-                e.getGuid(),
-                e.getMessage()
+                e.timeTs() == null ? null : ISO.format(e.timeTs().atZone(ZoneId.systemDefault())),
+                e.ngwId(),
+                e.loggerName(),
+                e.logLevel(),
+                e.thread(),
+                e.nodeId(),
+                e.className(),
+                e.guid(),
+                e.message()
         );
     }
 }

@@ -3,7 +3,7 @@ package com.nhbank.ngw.api.log.controller;
 import com.nhbank.ngw.api.log.dto.out.LogEntryDto;
 import com.nhbank.ngw.api.log.dto.in.LogQueryRequest;
 import com.nhbank.ngw.api.log.dto.out.PageResponse;
-import com.nhbank.ngw.common.dto.ApiResponse;
+import com.nhbank.ngw.common.api.dto.ApiResponse;
 import com.nhbank.ngw.domain.log.service.NgwLogProxyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

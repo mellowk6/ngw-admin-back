@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface UserMapper {
+public interface UserAccountMapper {
     boolean existsByUsername(@Param("username") String username);
 
     UserAccount findByUsername(@Param("username") String username);

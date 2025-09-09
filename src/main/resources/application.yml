@@ -48,6 +48,9 @@ management:
 
 logging:
   level:
+    root: DEBUG
+    sun.rmi: WARN
+    javax.management.remote.rmi: WARN
     org.mybatis: DEBUG
     org.mybatis.spring: DEBUG
 

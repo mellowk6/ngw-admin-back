@@ -13,11 +13,11 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserAccountRepository users;
+    private final UserAccountRepository userAccountRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccount u = users.findByUsername(username)
+        UserAccount u = userAccountRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
 
         // roles 컬럼: "ADMIN,USER" 형태 → GrantedAuthority로 매핑

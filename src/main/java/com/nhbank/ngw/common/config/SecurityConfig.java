@@ -96,17 +96,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/api/auth/csrf",
-                                "/api/auth/login",
-                                "/api/auth/logout",
-                                "/api/auth/check-id",
-                                "/api/auth/signup",
                                 "/h2-console/**",
                                 "/actuator/health",
-                                "/api/dept/list"
+                                "/api/auth/csrf",
+                                "/api/user/login",
+                                "/api/user/logout",
+                                "/api/user/check-id",
+                                "/api/user/signup",
+                                "/api/user/dept/**",
+                                "/api/logs/**"
                         ).permitAll()
-                        .requestMatchers("/api/logs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/user/my-info").authenticated()
                         .requestMatchers("/proxy/**").authenticated()
                         .anyRequest().denyAll()
                 )

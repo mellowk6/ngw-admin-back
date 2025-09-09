@@ -22,8 +22,8 @@ import java.time.Duration;
 @Slf4j
 public class NgwLogProxyServiceImpl implements NgwLogProxyService {
 
-    private final WebClient ngwWebClient;
-    private final NgwProperties props;
+    private final WebClient webClient;
+    private final NgwProperties ngwProperties;
 
     /**
      * NGW 로그 조회 프록시
@@ -34,16 +34,16 @@ public class NgwLogProxyServiceImpl implements NgwLogProxyService {
     public Mono<PageResponse<LogEntryDto>> fetchLogsFromNgw(LogQueryRequest req) {
         final LogQueryRequest safe = (req != null) ? req : new LogQueryRequest();
 
-        final long readTimeoutMs = (props.getTimeout() != null)
-                ? props.getTimeout().getReadMillis()
+        final long readTimeoutMs = (ngwProperties.getTimeout() != null)
+                ? ngwProperties.getTimeout().getReadMillis()
                 : 10_000; // 기본 10초
 
-        return ngwWebClient.post()
+        return webClient.post()
                 .uri("/api/ngw/outbound/logs")
                 .headers(h -> {
                     // 서비스 키 전달 (필요 시 다른 인증 헤더 추가 가능)
-                    if (props.getServiceKey() != null && !props.getServiceKey().isBlank()) {
-                        h.add("X-Service-Key", props.getServiceKey());
+                    if (ngwProperties.getServiceKey() != null && !ngwProperties.getServiceKey().isBlank()) {
+                        h.add("X-Service-Key", ngwProperties.getServiceKey());
                     }
                 })
                 .bodyValue(safe)
