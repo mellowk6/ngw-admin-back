@@ -1,4 +1,4 @@
-package com.nhbank.ngw.common.api.mapper;
+package com.nhbank.ngw.api.shared.mapper;
 
 
 

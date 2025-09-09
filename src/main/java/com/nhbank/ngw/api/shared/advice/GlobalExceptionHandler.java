@@ -1,6 +1,6 @@
-package com.nhbank.ngw.common.api.advice;
+package com.nhbank.ngw.api.shared.advice;
 
-import com.nhbank.ngw.common.api.dto.ApiError;
+import com.nhbank.ngw.api.shared.dto.ApiError;
 import com.nhbank.ngw.common.exception.DuplicateUsernameException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;

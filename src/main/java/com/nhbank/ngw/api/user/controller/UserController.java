@@ -1,7 +1,7 @@
 package com.nhbank.ngw.api.user.controller;
 
 import com.nhbank.ngw.api.user.dto.in.LoginRequest;
-import com.nhbank.ngw.common.api.dto.ApiResponse;
+import com.nhbank.ngw.api.shared.dto.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

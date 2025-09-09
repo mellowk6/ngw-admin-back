@@ -1,6 +1,6 @@
-package com.nhbank.ngw.common.api.advice;
+package com.nhbank.ngw.api.shared.advice;
 
-import com.nhbank.ngw.common.api.dto.ApiResponse;
+import com.nhbank.ngw.api.shared.dto.ApiResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
