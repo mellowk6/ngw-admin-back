@@ -4,19 +4,14 @@ import com.nhbank.ngw.domain.user.command.Signup;
 import jakarta.validation.constraints.NotBlank;
 
 public record SignupRequest(
-        @NotBlank String username,     // 사번
+        @NotBlank String id,        // 로그인 아이디
         @NotBlank String password,
-        @NotBlank String displayName,
-        @NotBlank String department,   // deptCode
+        @NotBlank String name,
+        @NotBlank String deptCode,
         @NotBlank String company
 ) {
+    /** 컨트롤러에서 그대로 사용: signupRequest.toCommand() */
     public Signup toCommand() {
-        return new Signup(
-                username,
-                password,
-                displayName,
-                department,
-                company
-        );
+        return new Signup(id, password, name, deptCode, company);
     }
 }
