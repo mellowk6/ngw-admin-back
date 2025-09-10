@@ -7,30 +7,29 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserAccountRepository userAccountRepository;
 
+    /**
+     * Spring Security 표준 시그니처이므로 파라미터명은 username 이지만,
+     * 실제로는 "로그인 아이디(id)" 로 사용한다.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccount u = userAccountRepository.findByUsername(username)
+        UserAccount u = userAccountRepository.findByLoginId(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
 
-        // roles 컬럼: "ADMIN,USER" 형태 → GrantedAuthority로 매핑
-        var authorities = Arrays.stream(u.getRoles().split(","))
-                .map(String::trim)
-                .filter(s -> !s.isBlank())
+        var authorities = u.roleList().stream()
                 .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
                 .map(SimpleGrantedAuthority::new)
                 .toList();
 
-        return User.withUsername(u.getUsername())
-                .password(u.getPasswordHash()) // BCrypt 인코딩된 해시 저장되어 있어야 함
-                .authorities(authorities)
+        return User.withUsername(u.getId())       // 로그인 아이디(id)
+                .password(u.getPassword())        // BCrypt 인코딩된 해시
+                .authorities(authorities)         // ROLE_ 접두어 보장
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)

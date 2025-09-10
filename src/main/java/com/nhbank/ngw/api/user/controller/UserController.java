@@ -35,7 +35,7 @@ public class UserController {
         try {
             // 1) 인증 수행 (UserDetailsService + PasswordEncoder 사용)
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.username(), req.password()));
+                    new UsernamePasswordAuthenticationToken(req.id(), req.password()));
 
             // 2) SecurityContext 구성 및 홀더 반영
             SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -50,7 +50,7 @@ public class UserController {
             // 4) 컨텍스트를 세션 저장소에 명시적으로 저장
             securityContextRepository.saveContext(context, request, response);
 
-            return ApiResponse.ok(Map.of("ok", true, "username", auth.getName()));
+            return ApiResponse.ok(Map.of("ok", true, "id", auth.getName()));
         } catch (org.springframework.security.core.AuthenticationException ex) {
             // 표준 에러 형식으로 내려가도록 401 던짐 → GlobalExceptionHandler 가 ApiError 로 응답
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호를 확인하세요.");

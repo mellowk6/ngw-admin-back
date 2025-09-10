@@ -3,42 +3,53 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nhbank.ngw.infra.user.mapper.UserAccountMapper">
 
+    <!-- DB 컬럼명과 도메인 필드명이 정합 -->
     <resultMap id="UserAccountMap" type="com.nhbank.ngw.domain.user.model.UserAccount">
-        <id     column="id"            property="id"/>
-        <result column="username"      property="username"/>
-        <result column="password_hash" property="passwordHash"/>
-        <result column="display_name"  property="displayName"/>
-        <result column="dept_code"     property="deptCode"/>
-        <result column="company"       property="company"/>
-        <result column="roles"         property="roles"/>
+        <id     column="no"          property="no"/>
+        <result column="id"          property="id"/>
+        <result column="password"    property="password"/>
+        <result column="name"        property="name"/>
+        <result column="dept_code"   property="deptCode"/>
+        <result column="company"     property="company"/>
+        <result column="roles"       property="roles"/>
+        <result column="created_at"  property="createdAt"/>
+        <result column="updated_at"  property="updatedAt"/>
     </resultMap>
 
-    <select id="existsByUsername" parameterType="string" resultType="boolean">
+    <!-- 아이디(id) 중복 체크 -->
+    <select id="existsById" parameterType="string" resultType="boolean">
         select case when count(1) > 0 then true else false end
         from users
-        where username = #{username}
+        where id = #{id}
     </select>
 
-    <select id="findByUsername" parameterType="string" resultMap="UserAccountMap">
-        select id, username, password_hash, display_name, dept_code, company, roles
+    <!-- 로그인 아이디(id)로 단건 조회 -->
+    <select id="findByLoginId" parameterType="string" resultMap="UserAccountMap">
+        select
+        no, id, password, name, dept_code, company, roles, created_at, updated_at
         from users
-        where username = #{username}
+        where id = #{id}
     </select>
 
-    <insert id="insert" parameterType="com.nhbank.ngw.domain.user.model.UserAccount"
-            useGeneratedKeys="true" keyProperty="id">
-        insert into users (username, password_hash, display_name, dept_code, company, roles)
-        values (#{username}, #{passwordHash}, #{displayName}, #{deptCode}, #{company}, #{roles})
+    <!-- 신규 저장: PK(no) 자동 채움 -->
+    <insert id="insert"
+            parameterType="com.nhbank.ngw.domain.user.model.UserAccount"
+            useGeneratedKeys="true" keyProperty="no" keyColumn="no">
+        insert into users (id, password, name, dept_code, company, roles)
+        values (#{id}, #{password}, #{name}, #{deptCode}, #{company}, #{roles})
     </insert>
 
-    <update id="update" parameterType="com.nhbank.ngw.domain.user.model.UserAccount">
+    <!-- 수정: PK(no) 기준 + updated_at 갱신 -->
+    <update id="updateByNo" parameterType="com.nhbank.ngw.domain.user.model.UserAccount">
         update users
-        set password_hash = #{passwordHash},
-        display_name = #{displayName},
-        dept_code = #{deptCode},
-        company = #{company},
-        roles = #{roles}
-        where id = #{id}
+        set
+        password   = #{password},
+        name       = #{name},
+        dept_code  = #{deptCode},
+        company    = #{company},
+        roles      = #{roles},
+        updated_at = current_timestamp
+        where no = #{no}
     </update>
 
 </mapper>

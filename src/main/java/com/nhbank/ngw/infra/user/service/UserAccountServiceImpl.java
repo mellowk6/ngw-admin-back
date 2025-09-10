@@ -1,6 +1,6 @@
 package com.nhbank.ngw.infra.user.service;
 
-import com.nhbank.ngw.common.exception.DuplicateUsernameException;
+import com.nhbank.ngw.common.exception.DuplicateIdException;
 import com.nhbank.ngw.domain.user.command.Signup;
 import com.nhbank.ngw.domain.user.model.UserAccount;
 import com.nhbank.ngw.domain.user.repository.UserAccountRepository;
@@ -13,26 +13,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserAccountServiceImpl implements UserAccountService {
+
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isUsernameAvailable(String username) {
-        return !userAccountRepository.existsByUsername(username);
+    public boolean isIdAvailable(String id) {
+        return !userAccountRepository.existsById(id);
     }
 
     @Override
     @Transactional
     public Long signup(Signup signup) {
-        if (!isUsernameAvailable(signup.username())) {
-            throw new DuplicateUsernameException(signup.username());
+        if (!isIdAvailable(signup.id())) {
+            throw new DuplicateIdException(signup.id());
         }
 
-        String encodedPassword = passwordEncoder.encode(signup.rawPassword());
+        String encodedPassword = passwordEncoder.encode(signup.password());
         UserAccount userAccount = signup.toEntity(encodedPassword, "ROLE_USER");
         UserAccount savedUserAccount = userAccountRepository.save(userAccount);
 
-        return savedUserAccount.getId();
+        return savedUserAccount.getNo();
     }
 }

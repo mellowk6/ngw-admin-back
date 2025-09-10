@@ -6,13 +6,16 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserAccountMapper {
-    boolean existsByUsername(@Param("username") String username);
 
-    UserAccount findByUsername(@Param("username") String username);
+    /** 로그인 아이디(id) 존재 여부 */
+    boolean existsById(@Param("id") String id);
 
-    /** 신규 저장 — useGeneratedKeys 로 id 채움 (XML) */
+    /** 로그인 아이디(id)로 조회 */
+    UserAccount findByLoginId(@Param("id") String id);
+
+    /** 신규 저장 — useGeneratedKeys 로 PK(no) 채움 (XML에서 keyProperty="no", keyColumn="no") */
     int insert(UserAccount user);
 
-    /** 수정 — id 기준 업데이트 */
-    int update(UserAccount user);
+    /** 수정 — PK(no) 기준 업데이트 */
+    int updateByNo(UserAccount user);
 }

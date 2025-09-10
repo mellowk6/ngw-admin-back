@@ -1,8 +1,8 @@
 package com.nhbank.ngw.infra.user.repository;
 
-import com.nhbank.ngw.infra.user.mapper.UserAccountMapper;
 import com.nhbank.ngw.domain.user.model.UserAccount;
 import com.nhbank.ngw.domain.user.repository.UserAccountRepository;
+import com.nhbank.ngw.infra.user.mapper.UserAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,22 +14,25 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
 
     private final UserAccountMapper userAccountMapper;
 
-    public boolean existsByUsername(String username) {
-        return userAccountMapper.existsByUsername(username);
+    @Override
+    public boolean existsById(String id) {
+        return userAccountMapper.existsById(id);
     }
 
-    public Optional<UserAccount> findByUsername(String username) {
-        return Optional.ofNullable(userAccountMapper.findByUsername(username));
+    @Override
+    public Optional<UserAccount> findByLoginId(String id) {
+        return Optional.ofNullable(userAccountMapper.findByLoginId(id));
     }
 
-    /** JPA의 save 시그니처를 흉내내 동일하게 제공 */
+    /** JPA의 save 시그니처 유사 제공: no == null → insert, 아니면 update */
+    @Override
     public UserAccount save(UserAccount user) {
-        if (user.getId() == null) {
-            userAccountMapper.insert(user); // id 세팅됨
+        if (user.getNo() == null) {
+            userAccountMapper.insert(user); // useGeneratedKeys 로 PK(no) 세팅
         } else {
-            int updated = userAccountMapper.update(user);
+            int updated = userAccountMapper.updateByNo(user);
             if (updated == 0) {
-                throw new IllegalStateException("수정 대상이 없습니다. id=" + user.getId());
+                throw new IllegalStateException("수정 대상이 없습니다. no=" + user.getNo());
             }
         }
         return user;

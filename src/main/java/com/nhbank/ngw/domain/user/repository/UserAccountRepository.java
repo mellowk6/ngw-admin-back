@@ -6,11 +6,12 @@ import java.util.Optional;
 
 public interface UserAccountRepository {
 
+    /** 로그인 아이디(id) 존재 여부 */
+    boolean existsById(String id);
 
-    boolean existsByUsername(String username);
+    /** 로그인 아이디(id)로 조회 */
+    Optional<UserAccount> findByLoginId(String id);
 
-    Optional<UserAccount> findByUsername(String username);
-
-    /** JPA의 save 시그니처를 흉내내 동일하게 제공 */
+    /** 신규 저장 또는 갱신 (PK: no) */
     UserAccount save(UserAccount user);
 }

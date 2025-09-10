@@ -3,18 +3,20 @@
 -- ==============================================
 
 create table if not exists users (
-    id            identity primary key,
-    username      varchar(100) unique not null,
-    password_hash varchar(255) not null,
-    display_name  varchar(100),
-    dept_code     varchar(50),
-    company       varchar(100),
-    roles         varchar(200),
-    created_at    timestamp default current_timestamp
-);
+    no          identity primary key,
+    id          varchar(100) unique not null,
+    password    varchar(255) not null,
+    name        varchar(100),
+    dept_code   varchar(50),
+    company     varchar(100),
+    roles       varchar(200),
+    created_at  timestamp default current_timestamp,
+    updated_at  timestamp default current_timestamp
+    );
 
-create index if not exists idx_users_username on users (username);
-create index if not exists idx_users_dept     on users (dept_code);
+-- 인덱스
+create index if not exists idx_users_id   on users (id);
+create index if not exists idx_users_dept on users (dept_code);
 
 -- 부서
 create table if not exists dept (
@@ -27,7 +29,7 @@ merge into dept (dept_code, dept_name) key (dept_code) values
 ('A002','디지털플랫폼전환팀'),
 ('A003','디지털코어팀');
 
-merge into users (username, password_hash, display_name, dept_code, company, roles) key (username) values
+merge into users (id, password, name, dept_code, company, roles) key (id) values
 -- admin / secret
 ('admin', '$2a$10$ZQYzljp.kXPjf/9.h.lVZeoBFgLFmQhDiGDyM7WyEaK4OCib.kW0e', '홍길동','A001','SK','ROLE_USER'),
 -- 1 / 1
