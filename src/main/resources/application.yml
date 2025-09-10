@@ -48,7 +48,7 @@ management:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     com.nhbank.ngw: DEBUG
     sun.rmi: WARN
     javax.management.remote.rmi: WARN

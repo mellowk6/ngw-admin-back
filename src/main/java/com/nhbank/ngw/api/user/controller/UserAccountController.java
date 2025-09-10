@@ -22,8 +22,8 @@ public class UserAccountController {
 
     /** 로그인 아이디 사용 가능 여부 */
     @GetMapping("/check-id")
-    public CheckIdResponse checkId(@RequestParam String id) {
-        return new CheckIdResponse(userAccountService.isIdAvailable(id));
+    public CheckIdResponse checkId(@RequestParam String userId) {
+        return new CheckIdResponse(userAccountService.isIdAvailable(userId));
     }
 
     /** 회원 가입: 서비스는 PK(no) 반환 */

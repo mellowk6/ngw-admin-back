@@ -35,7 +35,7 @@ public class UserController {
         try {
             // 1) 인증 수행 (UserDetailsService + PasswordEncoder 사용)
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.id(), req.password()));
+                    new UsernamePasswordAuthenticationToken(req.username(), req.password()));
 
             // 2) SecurityContext 구성 및 홀더 반영
             SecurityContext context = SecurityContextHolder.createEmptyContext();
