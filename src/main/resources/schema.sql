@@ -31,6 +31,6 @@ merge into dept (dept_code, dept_name) key (dept_code) values
 
 merge into users (id, password, name, dept_code, company, roles) key (id) values
 -- admin / secret
-('admin', '$2a$10$ZQYzljp.kXPjf/9.h.lVZeoBFgLFmQhDiGDyM7WyEaK4OCib.kW0e', '홍길동','A001','SK','ROLE_USER'),
+('admin', '$2a$10$ZQYzljp.kXPjf/9.h.lVZeoBFgLFmQhDiGDyM7WyEaK4OCib.kW0e', '홍길동','A001','NH','ADMIN'),
 -- 1 / 1
-('1', '$2a$10$de0SlH54mg7aPpBDVglmqeToedtT3yCAckbSqILtAIz.oot9pAXJS', '김길동','A002','SK','ROLE_USER');
+('1', '$2a$10$de0SlH54mg7aPpBDVglmqeToedtT3yCAckbSqILtAIz.oot9pAXJS', '김길동','A002','SK','DEVELOPER');

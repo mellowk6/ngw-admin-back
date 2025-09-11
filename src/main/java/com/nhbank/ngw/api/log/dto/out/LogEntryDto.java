@@ -16,12 +16,13 @@ public record LogEntryDto(
         String guid,
         String message
 ) {
-    private static final DateTimeFormatter ISO =
-            DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter VIEW =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     public static LogEntryDto from(LogEntry e) {
         return new LogEntryDto(
-                e.timeTs() == null ? null : ISO.format(e.timeTs().atZone(ZoneId.systemDefault())),
+                e.timeTs() == null ? null
+                        : e.timeTs().atZone(ZoneId.of("Asia/Seoul")).format(VIEW),
                 e.ngwId(),
                 e.loggerName(),
                 e.logLevel(),
@@ -32,5 +33,4 @@ public record LogEntryDto(
                 e.message()
         );
     }
-
 }
