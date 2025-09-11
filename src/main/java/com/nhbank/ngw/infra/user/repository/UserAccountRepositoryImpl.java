@@ -24,7 +24,6 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
         return Optional.ofNullable(userAccountMapper.findByLoginId(id));
     }
 
-    /** JPA의 save 시그니처 유사 제공: no == null → insert, 아니면 update */
     @Override
     public UserAccount save(UserAccount user) {
         if (user.getNo() == null) {

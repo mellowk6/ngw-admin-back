@@ -31,7 +31,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         }
 
         String encodedPassword = passwordEncoder.encode(signup.password());
-        UserAccount userAccount = signup.toEntity(encodedPassword, "ROLE_USER");
+        UserAccount userAccount = signup.toEntity(encodedPassword, "DEVELOPER"); //신규가입 시 무조건 DEVELOPER
         UserAccount savedUserAccount = userAccountRepository.save(userAccount);
 
         return savedUserAccount.getNo();

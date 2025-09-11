@@ -38,28 +38,21 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    /**
-     * server.servlet.session.timeout 값을 주입해 필터 빈 생성
-     */
+    /** server.servlet.session.timeout 값을 주입해 필터 빈 생성 */
     @Bean
     public InactivityTimeoutFilter inactivityTimeoutFilter(
             @Value("${server.servlet.session.timeout}") Duration sessionTimeout) {
-        // null 방어 및 최소값 처리(선택)
         Duration effective = (sessionTimeout != null ? sessionTimeout : Duration.ofMinutes(1));
         return new InactivityTimeoutFilter(effective);
     }
 
-    /**
-     * 세션 기반 SecurityContext 저장소
-     */
+    /** 세션 기반 SecurityContext 저장소 */
     @Bean
     public SecurityContextRepository securityContextRepository() {
         return new HttpSessionSecurityContextRepository();
     }
 
-    /**
-     * 프론트에서 사용하기 쉬운 쿠키 기반 CSRF 저장소
-     */
+    /** 프론트에서 사용하기 쉬운 쿠키 기반 CSRF 저장소 */
     @Bean
     public CsrfTokenRepository csrfTokenRepository() {
         CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
@@ -106,7 +99,16 @@ public class SecurityConfig {
                                 "/api/user/dept/**",
                                 "/api/logs/**"
                         ).permitAll()
+
+                        // ★ Roles API 접근 규칙
+                        // 조회: 로그인 사용자면 허용
+                        .requestMatchers(HttpMethod.GET, "/api/roles", "/api/roles/**").authenticated()
+                        // 생성/수정/삭제: ADMIN 권한만
+                        .requestMatchers(HttpMethod.POST,   "/api/roles/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,    "/api/roles/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/roles/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/user/my-info").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/menus").authenticated()
                         .requestMatchers("/proxy/**").authenticated()
                         .anyRequest().denyAll()
                 )
@@ -121,9 +123,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * CORS 설정
-     */
+    /** CORS 설정 */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var conf = new CorsConfiguration();
@@ -138,17 +138,13 @@ public class SecurityConfig {
         return src;
     }
 
-    /**
-     * 비밀번호 해시
-     */
+    /** 비밀번호 해시 */
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * 로그인에 사용할 AuthenticationManager (컨트롤러 로그인용)
-     */
+    /** 로그인에 사용할 AuthenticationManager (컨트롤러 로그인용) */
     @Bean
     AuthenticationManager authenticationManager(UserDetailsService uds, PasswordEncoder pe) {
         var provider = new DaoAuthenticationProvider();
@@ -157,9 +153,7 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
-    /**
-     * 로그아웃 핸들러: 세션 무효화 + 인증정보 제거
-     */
+    /** 로그아웃 핸들러: 세션 무효화 + 인증정보 제거 */
     @Bean
     public LogoutHandler logoutHandler() {
         SecurityContextLogoutHandler h = new SecurityContextLogoutHandler();
@@ -168,9 +162,7 @@ public class SecurityConfig {
         return h;
     }
 
-    /**
-     * 세션 인증 전략: 세션ID 교체(+ 선택적으로 세션 레지스트리 등록)
-     */
+    /** 세션 인증 전략: 세션ID 교체(+ 선택적으로 세션 레지스트리 등록) */
     @Bean
     public SessionAuthenticationStrategy sessionAuthenticationStrategy(SessionRegistry sessionRegistry) {
         return new CompositeSessionAuthenticationStrategy(List.of(
@@ -179,9 +171,7 @@ public class SecurityConfig {
         ));
     }
 
-    /**
-     * 동시 세션 제어 등에 사용 가능
-     */
+    /** 동시 세션 제어 등에 사용 가능 */
     @Bean
     SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();

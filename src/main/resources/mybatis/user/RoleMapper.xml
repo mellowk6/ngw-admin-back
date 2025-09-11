@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nhbank.ngw.infra.user.mapper.RoleMapper">
+
+    <resultMap id="RoleMap" type="com.nhbank.ngw.domain.user.model.Role">
+        <result column="ROLE_NAME"  property="roleName"/>
+        <result column="MENU_SCOPE" property="menuScope"/>
+        <result column="CREATED_AT" property="createdAt"/>
+        <result column="UPDATED_AT" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="RoleColumns">
+        ROLE_NAME, MENU_SCOPE, CREATED_AT, UPDATED_AT
+    </sql>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM ROLES
+        <where>
+            <if test="roleName != null and roleName != ''">
+                AND ROLE_NAME LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="menuLike != null and menuLike != ''">
+                AND MENU_SCOPE LIKE CONCAT('%', #{menuLike}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultMap="RoleMap">
+        SELECT <include refid="RoleColumns"/>
+        FROM ROLES
+        <where>
+            <if test="roleName != null and roleName != ''">
+                AND ROLE_NAME LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="menuLike != null and menuLike != ''">
+                AND MENU_SCOPE LIKE CONCAT('%', #{menuLike}, '%')
+            </if>
+        </where>
+        ORDER BY ROLE_NAME
+        <!-- ⚠️ 이름이 size, offset 순서와 일치해야 함 -->
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+</mapper>
