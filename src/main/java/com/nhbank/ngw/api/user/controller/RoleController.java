@@ -20,7 +20,6 @@ public class RoleController {
 
     private final RoleService roleService;
 
-    /** 목록 조회: GET /api/roles?roleName=...&menuLike=...&page=...&size=... */
     @GetMapping
     public ApiResponse<PageResponse<RoleDto>> list(
             @RequestParam(required = false) String roleName,
@@ -30,16 +29,15 @@ public class RoleController {
     ) {
         int p = (page == null || page < 0) ? 0 : page;
         int s = (size == null || size <= 0) ? 10 : Math.min(500, size);
-
-        var result = roleService.search(roleName, menuLike, p, s);  // Page<Role>
-        var dto    = PageMapper.toDto(result, RoleDto::from);       // PageResponse<RoleDto>
-
-        return ApiResponse.ok(dto);                                 // ApiResponse 래핑
+        var result = roleService.search(roleName, menuLike, p, s);
+        var dto    = PageMapper.toDto(result, RoleDto::from);
+        return ApiResponse.ok(dto);
     }
 
-    /** 단건 upsert */
+    /** 업서트: PUT /api/roles  (프론트도 경로변수 없이 base로 PUT) */
     @PutMapping
     public ApiResponse<Boolean> upsert(@RequestBody RoleUpsertRequest body) {
+        log.info("UPSERT roleName={}, menuScope={}", body.roleName(), body.menuScope());
         roleService.upsert(Role.builder()
                 .roleName(body.roleName())
                 .menuScope(body.menuScope())
@@ -47,9 +45,10 @@ public class RoleController {
         return ApiResponse.ok(true);
     }
 
-    /** 복수 삭제 */
+    /** 삭제: DELETE */
     @DeleteMapping
     public ApiResponse<Boolean> delete(@RequestBody RoleDeleteRequest body) {
+        log.info("DELETE roles: {}", body.roleNames());
         roleService.deleteAll(body.roleNames());
         return ApiResponse.ok(true);
     }

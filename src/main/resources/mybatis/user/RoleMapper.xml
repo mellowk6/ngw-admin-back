@@ -14,6 +14,7 @@
         ROLE_NAME, MENU_SCOPE, CREATED_AT, UPDATED_AT
     </sql>
 
+    <!-- ===== 조회 ===== -->
     <select id="count" resultType="long">
         SELECT COUNT(*) FROM ROLES
         <where>
@@ -38,8 +39,39 @@
             </if>
         </where>
         ORDER BY ROLE_NAME
-        <!-- ⚠️ 이름이 size, offset 순서와 일치해야 함 -->
         LIMIT #{size} OFFSET #{offset}
     </select>
+
+    <!-- ===== upsert에서 쓰는 update / insert ===== -->
+    <update id="updateById" parameterType="com.nhbank.ngw.domain.user.model.Role">
+        UPDATE ROLES
+        SET MENU_SCOPE = #{menuScope},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE ROLE_NAME = #{roleName}
+    </update>
+
+    <insert id="insert" parameterType="com.nhbank.ngw.domain.user.model.Role">
+        INSERT INTO ROLES (ROLE_NAME, MENU_SCOPE, CREATED_AT, UPDATED_AT)
+        VALUES (#{roleName}, #{menuScope}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- ===== 삭제(복수) ===== -->
+    <delete id="deleteAll">
+        DELETE FROM ROLES
+        WHERE ROLE_NAME IN
+        <foreach collection="roleNames" item="n" open="(" separator="," close=")">
+            #{n}
+        </foreach>
+    </delete>
+
+    <!-- (FK가 있으면 먼저 연결 테이블 정리)
+    <delete id="deleteUserRoleByRoles">
+      DELETE FROM USER_ROLES
+       WHERE ROLE_NAME IN
+       <foreach collection="roleNames" item="n" open="(" separator="," close=")">
+         #{n}
+       </foreach>
+    </delete>
+    -->
 
 </mapper>
