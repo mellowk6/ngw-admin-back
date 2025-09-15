@@ -58,7 +58,7 @@ create index if not exists idx_roles_menu_scope on roles (menu_scope);
 -- 초기 권한 데이터
 merge into roles (role_name, menu_scope) key (role_name) values
 ('ADMIN',     'ALL'),
-('DEVELOPER', '로그 조회');
+('DEVELOPER', 'LOG01');
 
 -- ==============================================
 -- 메뉴(MENU) 테이블

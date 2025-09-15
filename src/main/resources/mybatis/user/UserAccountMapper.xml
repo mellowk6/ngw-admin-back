@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nhbank.ngw.infra.user.mapper.UserAccountMapper">
+
+    <resultMap id="UserAccountMap" type="com.nhbank.ngw.domain.user.model.UserAccount">
+        <id     column="NO"          property="no"/>
+        <result column="ID"          property="id"/>
+        <result column="PASSWORD"    property="password"/>
+        <result column="NAME"        property="name"/>
+        <result column="DEPT_CODE"   property="deptCode"/>
+        <result column="COMPANY"     property="company"/>
+        <result column="ROLES"       property="roles"/>
+        <result column="CREATED_AT"  property="createdAt"/>
+        <result column="UPDATED_AT"  property="updatedAt"/>
+    </resultMap>
+
+    <sql id="UserWhere">
+        <where>
+            <if test="id != null and id != ''">
+                AND ID LIKE CONCAT('%', #{id}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND NAME LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="roles != null and roles != ''">
+                AND ROLES = #{roles}
+            </if>
+            <if test="deptCode != null and deptCode != ''">
+                AND DEPT_CODE = #{deptCode}
+            </if>
+            <if test="company != null and company != ''">
+                AND COMPANY LIKE CONCAT('%', #{company}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <select id="existsById" parameterType="string" resultType="boolean">
+        SELECT CASE WHEN COUNT(1) > 0 THEN TRUE ELSE FALSE END
+        FROM USERS
+        WHERE ID = #{id}
+    </select>
+
+    <select id="findByLoginId" parameterType="string" resultMap="UserAccountMap">
+        SELECT NO, ID, PASSWORD, NAME, DEPT_CODE, COMPANY, ROLES, CREATED_AT, UPDATED_AT
+        FROM USERS
+        WHERE ID = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.nhbank.ngw.domain.user.model.UserAccount"
+            useGeneratedKeys="true" keyProperty="no" keyColumn="NO">
+        INSERT INTO USERS
+            (ID, PASSWORD, NAME, DEPT_CODE, COMPANY, ROLES, CREATED_AT, UPDATED_AT)
+        VALUES
+            (#{id}, #{password}, #{name}, #{deptCode}, #{company}, #{roles}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="updateByNo" parameterType="com.nhbank.ngw.domain.user.model.UserAccount">
+        UPDATE USERS
+        <set>
+            <if test="id != null">ID = #{id},</if>
+            <if test="password != null">PASSWORD = #{password},</if>
+            <if test="name != null">NAME = #{name},</if>
+            <if test="deptCode != null">DEPT_CODE = #{deptCode},</if>
+            <if test="company != null">COMPANY = #{company},</if>
+            <if test="roles != null">ROLES = #{roles},</if>
+            UPDATED_AT = #{updatedAt}
+        </set>
+        WHERE NO = #{no}
+    </update>
+
+    <select id="countByQuery" resultType="long">
+        SELECT COUNT(*)
+        FROM USERS
+        <include refid="UserWhere"/>
+    </select>
+
+    <select id="findPageByQuery" resultMap="UserAccountMap">
+        SELECT NO, ID, PASSWORD, NAME, DEPT_CODE, COMPANY, ROLES, CREATED_AT, UPDATED_AT
+        FROM USERS
+        <include refid="UserWhere"/>
+        ORDER BY NO
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+</mapper>

@@ -1,11 +1,15 @@
 package com.nhbank.ngw.infra.user.repository;
 
+import com.nhbank.ngw.domain.shared.model.Page;
+import com.nhbank.ngw.domain.user.command.UserQuery;
 import com.nhbank.ngw.domain.user.model.UserAccount;
 import com.nhbank.ngw.domain.user.repository.UserAccountRepository;
 import com.nhbank.ngw.infra.user.mapper.UserAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -35,5 +39,25 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
             }
         }
         return user;
+    }
+
+    @Override
+    public Page<UserAccount> findUsers(UserQuery q, int page, int size) {
+        int p = Math.max(0, page);
+        int s = Math.max(1, size);
+        int offset = p * s;
+
+        long total = userAccountMapper.countByQuery(
+                q.id(), q.name(), q.roles(), q.deptCode(), q.company()
+        );
+
+        List<UserAccount> content = (total > 0)
+                ? userAccountMapper.findPageByQuery(
+                q.id(), q.name(), q.roles(), q.deptCode(), q.company(),
+                offset, s
+        )
+                : Collections.emptyList();
+
+        return Page.of(content, p, s, total);
     }
 }

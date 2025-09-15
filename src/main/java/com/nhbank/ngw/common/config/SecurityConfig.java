@@ -107,6 +107,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,   "/api/roles/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,    "/api/roles/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/roles/**").hasRole("ADMIN")
+
+                        // ★ 사용자 관리 Users API 접근 규칙 (필수!)
+                        // 목록/단건 조회 및 수정/생성/삭제 모두 ADMIN만 접근
+                        .requestMatchers(HttpMethod.GET,    "/api/users", "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,   "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,    "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+
                         .requestMatchers(HttpMethod.GET, "/api/user/my-info").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/menus").authenticated()
                         .requestMatchers("/proxy/**").authenticated()
