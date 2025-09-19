@@ -1,11 +1,11 @@
 package com.nhbank.ngw.api.user.controller;
 
-import com.nhbank.ngw.api.log.dto.out.PageResponse;     // ✅ 기존 공용 PageResponse 재사용
+import com.nhbank.ngw.api.log.dto.out.PageResponse;     // 기존 공용 PageResponse 재사용
 import com.nhbank.ngw.api.shared.dto.ApiResponse;
-import com.nhbank.ngw.api.shared.mapper.PageMapper;      // ✅ domain Page → api PageResponse 변환기
+import com.nhbank.ngw.api.shared.mapper.PageMapper;      // domain Page → api PageResponse 변환기
 import com.nhbank.ngw.api.user.dto.in.UserUpdateRequest; // body DTO (프론트 키 유지)
 import com.nhbank.ngw.api.user.dto.out.UserDto;          // 목록 응답 DTO (프론트 키 유지)
-import com.nhbank.ngw.domain.shared.model.Page;          // ✅ 공용 Page
+import com.nhbank.ngw.domain.shared.model.Page;          // 공용 Page
 import com.nhbank.ngw.domain.user.command.UpdateUserCommand;
 import com.nhbank.ngw.domain.user.command.UserQuery;
 import com.nhbank.ngw.domain.user.model.UserAccount;
@@ -35,13 +35,13 @@ public class UserMngController {
         int p = (page == null || page < 0) ? 0 : page;
         int s = (size == null || size <= 0) ? 10 : Math.min(500, size);
 
-        // ✅ 공용 UserQuery 사용
+        // 공용 UserQuery 사용
         UserQuery q = new UserQuery(id, name, roles, deptCode, company);
 
-        // ✅ 서비스는 공용 Page<UserAccount> 반환
+        // 서비스는 공용 Page<UserAccount> 반환
         Page<UserAccount> result = userAccountService.findUsers(q, p, s);
 
-        // ✅ 공용 Page → API PageResponse 매핑
+        // 공용 Page → API PageResponse 매핑
         PageResponse<UserDto> dto = PageMapper.toDto(result, UserDto::from);
 
         return ApiResponse.ok(dto);

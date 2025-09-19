@@ -79,7 +79,7 @@ spring:
 
 # 로컬 NGW 호출 오버라이드
 ngw:
-  base-url: http://localhost:8083/ngw
+  base-url: http://localhost:8080
   timeout:
     connect-millis: 1500
     read-millis: 3000

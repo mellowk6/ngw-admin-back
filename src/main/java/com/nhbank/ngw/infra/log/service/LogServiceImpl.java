@@ -52,7 +52,7 @@ public class LogServiceImpl implements LogService {
         var type = new ParameterizedTypeReference<NgwPage<NgwLogItem>>() {};
 
         return webClient.post()
-                .uri("/api/ngw/outbound/logs")
+                .uri("/outbound/logs")
                 .headers(h -> {
                     var key = ngwProperties.getServiceKey();
                     if (key != null && !key.isBlank()) h.add("X-Service-Key", key);
